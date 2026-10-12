@@ -11,7 +11,7 @@ import qrcode from '../../vendor/qrcode.mjs';
 
 const $ = id => document.getElementById(id);
 let T, D;
-const U = { showDone: false, docId: null, tpl: {} };
+const U = { showDone: false, docId: null, docPicked: false, tpl: {} };
 
 const stageOf = k => D.stages.find(s => s.key === k);
 const stagePill = k => { const s = stageOf(k); return `<span class="stg g-${k}">${ASME[s.sym]}${s.name}</span>`; };
@@ -60,14 +60,15 @@ function tableHTML() {
   const list = T.state.visits.filter(v => U.showDone || needsAction(v)).sort((a, b) => a.queue.localeCompare(b.queue));
   return `<div class="tools"><label><input type="checkbox" id="showDone" ${U.showDone ? 'checked' : ''}>แสดงที่เสร็จแล้ว</label>
       <button class="sbtn" data-act="addMock">เพิ่มผู้ป่วยจำลอง 3 คน</button></div>
-    <div class="tblwrap"><table><caption class="sr">ผู้ป่วยวันนี้ ${list.length} คน</caption><thead><tr><th scope="col">คิว</th><th scope="col">ชื่อ</th><th scope="col">แผนก</th><th scope="col">ขั้นตอน</th><th scope="col">การกระทำ</th></tr></thead><tbody>
+    <div class="tblwrap" tabindex="0" role="region" aria-label="ตารางผู้ป่วยวันนี้"><table><caption class="sr">ผู้ป่วยวันนี้ ${list.length} คน</caption><thead><tr><th scope="col">คิว</th><th scope="col">ชื่อ</th><th scope="col">แผนก</th><th scope="col">ขั้นตอน</th><th scope="col">การกระทำ</th></tr></thead><tbody>
       ${list.map(v => `<tr class="${v.demo ? '' : 'me'}"><td class="q">${v.queue}</td><td>${esc(v.name)}${v.demo ? '' : ' <small style="color:#1E5BB8;font-weight:700">(ในแอป)</small>'}</td><td>${D.depts[v.dept].name}${v.dept_chosen === D.unsure.key ? ' <small style="color:#465166">(ไม่แน่ใจ)</small>' : ''}</td><td>${stagePill(v.stage)}</td><td>${actionFor(v)}</td></tr>`).join('') || '<tr><td colspan="5" style="color:#465166">ไม่มีผู้ป่วยที่ต้องดำเนินการ</td></tr>'}
     </tbody></table></div>`;
 }
 
 function doctorHTML() {
   const cands = T.state.visits.filter(v => v.result).sort((a, b) => (a.demo - b.demo) || b.result.at.localeCompare(a.result.at));
-  if (!U.docId || !cands.some(v => v.id === U.docId)) U.docId = cands[0]?.id || null;
+  // ค่าเริ่มต้นตามผู้ป่วยในแอปล่าสุดที่พบแพทย์แล้ว จนกว่า staff จะเลือกเอง
+  if (!U.docPicked || !cands.some(v => v.id === U.docId)) { U.docId = cands[0]?.id || null; U.docPicked = false; }
   const v = cands.find(x => x.id === U.docId), c = v?.care, qs = D.care.quiz.questions;
   const pick = cands.length ? `<label class="sr" for="docPick">เลือกผู้ป่วย</label><select class="dxsel" id="docPick">${cands.map(x => `<option value="${x.id}" ${x.id === U.docId ? 'selected' : ''}>${x.queue} ${esc(x.name)}${x.demo ? '' : ' (ในแอป)'}</option>`).join('')}</select>` : '';
   const ans = v ? qs.filter(q => c.ans[q.k]).map(q => `<li class="${(q.risk || []).includes(c.ans[q.k]) ? 'r' : ''}"><span>${q.q}</span><b>${esc(c.ans[q.k])}</b></li>`).join('') : '';
@@ -93,12 +94,12 @@ function valueStreamHTML() {
   const faces = D.app.faces;
   return `<h2>Value stream ของผู้ป่วย <span style="font-weight:500;color:#465166;font-size:15px">ข้อมูลย้อนหลัง ${vs.histN} ราย + ในแอปวันนี้ ${vs.liveN} ราย</span></h2>
     <dl class="kpis">
-      <div class="kpi"><dt>Lead time เฉลี่ย</dt><dd>${vs.lead} <small>นาที</small></dd><p>ตั้งแต่ลงทะเบียนถึงกลับบ้าน</p></div>
-      <div class="kpi"><dt>เวลาที่เพิ่มคุณค่า (VA)</dt><dd>${vs.va} <small>นาที</small></dd><p>พบแพทย์ + รับยา</p></div>
-      <div class="kpi"><dt>PCE</dt><dd>${vs.pce}<small>%</small></dd><p>VA ÷ lead time</p></div>
-      <div class="kpi"><dt>สัดส่วนความสูญเปล่า (NVA)</dt><dd>${vs.nvaPct}<small>%</small></dd><p>ส่วนใหญ่มาจากการรอเรียกคิว</p></div>
+      <div class="kpi"><dt>Lead time เฉลี่ย</dt><dd>${vs.lead} <small>นาที</small></dd><dd class="kp">ตั้งแต่ลงทะเบียนถึงกลับบ้าน</dd></div>
+      <div class="kpi"><dt>เวลาที่เพิ่มคุณค่า (VA)</dt><dd>${vs.va} <small>นาที</small></dd><dd class="kp">พบแพทย์ + รับยา</dd></div>
+      <div class="kpi"><dt>PCE</dt><dd>${vs.pce}<small>%</small></dd><dd class="kp">VA ÷ lead time</dd></div>
+      <div class="kpi"><dt>สัดส่วนความสูญเปล่า (NVA)</dt><dd>${vs.nvaPct}<small>%</small></dd><dd class="kp">ส่วนใหญ่มาจากการรอเรียกคิว</dd></div>
     </dl>
-    <div class="tblwrap"><table><caption class="sr">เวลาและความรู้สึกแต่ละขั้น</caption><thead><tr><th scope="col"><span class="sr">สัญลักษณ์</span></th><th scope="col">ขั้นตอน</th><th scope="col">ประเภท</th><th scope="col" style="width:28%">เวลาเฉลี่ย (นาที)</th><th scope="col">สูงสุด</th><th scope="col">อารมณ์เฉลี่ย</th><th scope="col">ความเห็นผู้ป่วย</th></tr></thead><tbody>
+    <div class="tblwrap" tabindex="0" role="region" aria-label="ตาราง value stream"><table><caption class="sr">เวลาและความรู้สึกแต่ละขั้น</caption><thead><tr><th scope="col"><span class="sr">สัญลักษณ์</span></th><th scope="col">ขั้นตอน</th><th scope="col">ประเภท</th><th scope="col" style="width:28%">เวลาเฉลี่ย (นาที)</th><th scope="col">สูงสุด</th><th scope="col">อารมณ์เฉลี่ย</th><th scope="col">ความเห็นผู้ป่วย</th></tr></thead><tbody>
       ${vs.rows.map(r => {
         const low = r.mood != null && r.mood < 3, face = r.mood != null ? faces[Math.min(4, Math.max(0, Math.round(r.mood) - 1))] : null;
         const reasons = Object.entries(r.reasons).sort((a, b) => b[1] - a[1]).map(([t, n]) => `<q>${esc(t)} <small>(${n} คนในแอป)</small></q>`).join('');
@@ -185,7 +186,7 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('change', async e => {
   if (e.target.id === 'showDone') { U.showDone = e.target.checked; $('patients').innerHTML = tableHTML(); $('showDone').focus(); }
-  if (e.target.id === 'docPick') { U.docId = e.target.value; $('doctor').innerHTML = doctorHTML(); $('docPick').focus(); }
+  if (e.target.id === 'docPick') { U.docId = e.target.value; U.docPicked = true; $('doctor').innerHTML = doctorHTML(); $('docPick').focus(); }
   if (e.target.dataset.tpl) U.tpl[e.target.dataset.tpl] = e.target.value;
   if (e.target.id === 'importFile') {
     const f = e.target.files[0];

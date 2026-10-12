@@ -1,27 +1,25 @@
-# Deploy โหมดไม่มี server ขึ้น GitHub Pages ทุกครั้งที่ push เข้า main
+# เทสก่อน แล้ว deploy ขึ้น GitHub Pages ทุกครั้งที่ push เข้า main
 # ครั้งแรก: Settings → Pages → Build and deployment → Source = GitHub Actions
-name: Deploy GitHub Pages
+# เว็บไม่มีขั้น build: ขั้น "Collect site files" แค่คัดลอกไฟล์ที่เบราว์เซอร์ใช้ (ไม่ส่ง node_modules / tests ขึ้นไป)
+name: Test and deploy GitHub Pages
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,7 +27,39 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run build:pages
+      - name: Unit tests
+        run: npm run test:unit
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: End-to-end tests (390×844 and 1280×800)
+        run: npm run test:e2e
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect site files
+        run: |
+          mkdir _site
+          cp -r index.html staff.html favicon.svg server-mode.json css js vendor _site/
+          mkdir _site/data && cp data/*.yaml _site/data/ && rm -f _site/data/state.yaml
+          touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

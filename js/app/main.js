@@ -35,6 +35,15 @@ function screenView() {
   return U.tab === 'nav' ? navTab() : U.tab === 'results' ? resultsTab() : U.tab === 'care' ? careTab() : nowTab();
 }
 
+/** จำปุ่ม/ช่องที่โฟกัสอยู่ เพื่อคืนโฟกัสหลังวาดหน้าจอใหม่ (สำคัญกับผู้ใช้คีย์บอร์ด) */
+function focusKey(inner) {
+  const a = document.activeElement;
+  if (!a || !inner.contains(a) || a === inner) return null;
+  if (a.id) return '#' + CSS.escape(a.id);
+  if (a.dataset.act) return `[data-act="${CSS.escape(a.dataset.act)}"]` + (a.dataset.arg !== undefined ? `[data-arg="${CSS.escape(a.dataset.arg)}"]` : '');
+  return null;
+}
+
 function render() {
   const U = C.U, inner = $('appInner');
   if (U.screen === 'app' && !visit()) { // คิวถูกลบ (เช่น staff กดรีเซ็ต)
@@ -43,7 +52,7 @@ function render() {
   const ph = document.querySelector('.phone');
   if (ph) ph.dataset.sb = U.screen === 'login' && U.face !== null ? 'dark' : '';
   const sc = inner.querySelector('.scroll'), keep = sc ? sc.scrollTop : 0;
-  const fid = document.activeElement && inner.contains(document.activeElement) ? document.activeElement.id : null;
+  const fid = focusKey(inner);
   const v = screenView();
   const ti = Math.max(0, TABS.findIndex(t => t[0] === U.tab)), from = lastTab ?? ti;
   const credit = `<p class="credit">Prototype by <b>IE BUU</b> · Service Design Thinking Workshop</p>`;
@@ -53,7 +62,7 @@ function render() {
     <div class="bubble" aria-hidden="true">${TABS[ti][2]}</div>
     ${TABS.map(([k, t, ic], i) => `<button class="ctab" ${i === ti ? 'aria-current="page"' : ''} data-act="tab" data-arg="${k}"><span class="ti" aria-hidden="true">${ic}</span><span class="tl">${t}</span>${dot(k) ? '<span class="dot" aria-hidden="true"></span><span class="sr">มีเรื่องใหม่</span>' : ''}</button>`).join('')}
   </nav>${credit}` : `<div class="credit-solo">${credit}</div>`;
-  inner.innerHTML = (v.full ? '' : topbar()) + `<main class="scroll${v.full ? ' full' : ''}" id="scr" tabindex="-1">${v.body}</main>` + `<div class="bottom"><div class="dock">${v.dock || ''}</div>${tabs}</div>`;
+  inner.innerHTML = (v.full ? '' : topbar()) + `<main class="scroll${v.full ? ' full' : ''}" id="scr" tabindex="0" aria-label="เนื้อหา">${v.body}</main>` + `<div class="bottom"><div class="dock">${v.dock || ''}</div>${tabs}</div>`;
   const ns = inner.querySelector('.scroll'), bt = inner.querySelector('.bottom');
   if (ns && bt) ns.style.paddingBottom = (bt.offsetHeight + 28) + 'px';
   const cn = inner.querySelector('.cnav');
@@ -62,7 +71,7 @@ function render() {
   resetScroll = false;
   if (ns && U.screen === 'app' && U.tab === 'care' && U.care.view === 'chat') { ns.scrollTop = ns.scrollHeight; U.chatSeen = visibleChat().length; saveSession(); }
   if ($('m3d')) ensureLoop3();
-  if (fid) { const el = $(fid); if (el) { el.focus({ preventScroll: true }); if (el.setSelectionRange && typeof el.value === 'string') { try { const l = el.value.length; el.setSelectionRange(l, l); } catch { /* ไม่รองรับ */ } } } }
+  if (fid) { const el = inner.querySelector(fid); if (el) { el.focus({ preventScroll: true }); if (el.setSelectionRange && typeof el.value === 'string') { try { const l = el.value.length; el.setSelectionRange(l, l); } catch { /* ไม่รองรับ */ } } } }
   scheduleChat();
 }
 
@@ -128,7 +137,7 @@ function diffAlerts() {
   if (p.stage !== v.stage) {
     if (v.stage === 'waiting') { finishStage('vitals'); alertNav('คัดกรองเสร็จแล้ว', `ไปรอหน้าห้องตรวจ${dn} ตอนนี้รออีก ${a} คิว`, 'คัดกรองเสร็จ'); }
     else if (v.stage === 'consult') { finishStage('waiting'); alertNav(`ถึงคิวคุณแล้ว ${qText()}`, `เข้า${room}ได้เลย`, 'ถึงคิว'); }
-    else if (v.stage === 'pharmacy') { finishStage('consult'); alertNav('พบแพทย์เสร็จแล้ว', 'ผลตรวจและวิธีกินยาอยู่ในแท็บผลและยา เลือกวิธีรับยาได้เลย', 'มีผลตรวจใหม่', 'act'); }
+    else if (v.stage === 'pharmacy') { finishStage('consult'); C.U.chatSeen = visibleChat(v).length; saveSession(); alertNav('พบแพทย์เสร็จแล้ว', 'ผลตรวจและวิธีกินยาอยู่ในแท็บผลและยา เลือกวิธีรับยาได้เลย', 'มีผลตรวจใหม่', 'act'); }
     else if (v.stage === 'done') {
       finishStage('pharmacy');
       if (v.rx === 'self') alertGo('เสร็จที่โรงพยาบาลแล้ว', `หมอจะส่งแบบประเมินอาการมาให้ตอบภายใน ${D.care.quiz.due_days} วัน`, 'เสร็จสิ้น', 'done', 'ดูการติดตาม', toCare());

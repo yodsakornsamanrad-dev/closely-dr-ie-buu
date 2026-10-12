@@ -31,6 +31,7 @@ const D = await loadData(name => fs.promises.readFile(path.join(ROOT, name), 'ut
 let state, ownMtime = 0;
 const HEADER = '# Closely DR. x IE BUU — ข้อมูลที่แอปใช้งานอยู่ (แก้ไขไฟล์นี้ได้ระหว่างรัน แอปจะอัปเดตทันที)\n# ลบไฟล์นี้ (npm run reset) เพื่อเริ่มใหม่จากข้อมูลตั้งต้น\n';
 function writeState() {
+  fs.mkdirSync(path.dirname(STATE_FILE), { recursive: true });
   fs.writeFileSync(STATE_FILE, HEADER + stateYaml(state));
   ownMtime = fs.statSync(STATE_FILE).mtimeMs;
 }
@@ -59,7 +60,7 @@ setInterval(() => { for (const res of clients) res.write(': ping\n\n'); }, 25000
 // ---------- http ----------
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.yaml': 'text/yaml; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.md': 'text/markdown; charset=utf-8' };
 // เสิร์ฟเฉพาะไฟล์ที่ GitHub Pages จะเสิร์ฟ (ไม่เปิด node_modules, tests, .git)
-const PUBLIC = /^(index\.html|staff\.html|favicon\.svg|(css|js|vendor|data)\/[\w./-]+)$/;
+const PUBLIC = /^(index\.html|staff\.html|favicon\.svg|server-mode\.json|(css|js|vendor|data)\/[\w./-]+)$/;
 
 function sendJson(res, status, data) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -77,6 +78,7 @@ function readBody(req) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   try {
+    if (url.pathname === '/server-mode.json' && !STATIC_ONLY) return sendJson(res, 200, { server: true });
     if (url.pathname.startsWith('/api/')) {
       if (STATIC_ONLY) return sendJson(res, 404, { error: 'โหมด static ไม่มี API' });
       if (url.pathname === '/api/events') {

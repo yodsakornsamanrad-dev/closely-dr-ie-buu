@@ -19,8 +19,9 @@ async function readText(name) {
 async function detect() {
   if (new URLSearchParams(location.search).get('mode') === 'local') return 'local';
   try {
-    const r = await fetch('api/state', { cache: 'no-store' });
-    if (r.ok && (r.headers.get('content-type') || '').includes('json')) return 'server';
+    // server-mode.json: ในไฟล์ static เป็น false, server.mjs ตอบ true (ไม่มี 404 ใน console บน GitHub Pages)
+    const r = await fetch('server-mode.json', { cache: 'no-store' });
+    if (r.ok && (await r.json()).server === true) return 'server';
   } catch { /* ไม่มี server */ }
   return 'local';
 }

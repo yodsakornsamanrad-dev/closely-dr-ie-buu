@@ -72,9 +72,9 @@ tr.low td{background:#FFF1EF}
 .rp{margin-top:10px; background:#F5F7FB; border-radius:20px; padding:12px 14px}
 .rprow{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
 .rprow select{min-height:40px; border-radius:999px; border:0; box-shadow:inset 0 0 0 2px #DCE2EC; padding:0 14px; background:#fff; color:#0E1930}
-.rpplay{width:44px; min-height:40px; border:0; border-radius:999px; background:#0F9F8F; color:#fff; font-weight:800}
+.rpplay{width:44px; min-height:40px; border:0; border-radius:999px; background:#0B7A6E; color:#fff; font-weight:800}
 .spd{min-height:36px; border:0; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 2px #DCE2EC; padding:0 12px; font-weight:700; font-family:var(--num); color:#0E1930}
-.spd[aria-pressed="true"]{background:#0F9F8F; color:#fff; box-shadow:none}
+.spd[aria-pressed="true"]{background:#0B7A6E; color:#fff; box-shadow:none}
 .rptime{margin-left:auto; font-size:14px; color:#465166} .rptime b{font-family:var(--num); font-size:18px; color:#0E1930}
 .spark{display:block; width:100%; height:44px; margin-top:10px}
 #rpSlider{width:100%; accent-color:#0F9F8F; margin:2px 0 0}
@@ -107,8 +107,11 @@ tr.low td{background:#FFF1EF}
 
 @media (max-width:560px){
   .staff{padding:16px}
-  .callers,.kpis{grid-template-columns:1fr 1fr}
-  .caller .n{font-size:56px}
+  .callers,.kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .caller{padding:16px 18px}
+  .caller .n{font-size:44px}
+  .kpi{padding:16px 18px}
+  .kpi dd{font-size:36px}
 }
 
 /* ========== เพิ่มสำหรับหน้า staff จริง ========== */
@@ -129,3 +132,5 @@ label.sbtn{cursor:pointer}
 .qracts{display:flex; gap:8px; justify-content:center}
 .qrnote{font-size:13px; color:#465166; margin:12px 0 0}
 .dcard select.dxsel{width:100%; margin:0}
+.kpi dd.kp{font-family:var(--font); font-size:13px; font-weight:400; color:#465166; letter-spacing:0; line-height:1.4; margin:4px 0 0}
+.tblwrap{position:relative}  /* ให้ป้าย .sr ในตารางอยู่ในกล่องที่เลื่อนได้ ไม่ดันหน้ากว้างเกินจอ */
