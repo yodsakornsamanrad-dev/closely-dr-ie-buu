@@ -492,3 +492,5 @@ html, body, *{scrollbar-width:none; -ms-overflow-style:none}
 a.dchip{display:inline-flex; align-items:center; text-decoration:none}
 .lg-note a{color:var(--act-ink); font-weight:600}
 .scroll:focus{outline:none}
+.demolink{text-align:center; margin:0}
+.demolink .link{display:inline-flex; gap:6px; align-items:center; font-size:.833rem}

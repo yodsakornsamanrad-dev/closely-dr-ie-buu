@@ -110,3 +110,22 @@ tr.low td{background:#FFF1EF}
   .callers,.kpis{grid-template-columns:1fr 1fr}
   .caller .n{font-size:56px}
 }
+
+/* ========== เพิ่มสำหรับหน้า staff จริง ========== */
+body.staffpage{background:#DCE2EE; color:#0E1930}
+a.sbtn{text-decoration:none}
+label.sbtn{cursor:pointer}
+.sbar .sconn{background:#fff; box-shadow:inset 0 0 0 2px #DCE2EC}
+.sfoot{margin:32px 0 8px; text-align:center; color:#465166; font-size:13px}
+.staffpage .toast{position:fixed; top:20px}
+#shareDlg{border:0; border-radius:28px; padding:24px; max-width:min(420px,calc(100vw - 32px)); box-shadow:0 40px 80px -30px rgba(14,25,48,.45); color:#0E1930}
+#shareDlg::backdrop{background:rgba(14,25,48,.45)}
+#shareDlg h2{margin:0 0 4px; font-size:22px}
+#shareDlg > p{margin:0 0 12px; color:#465166}
+.qrbox{background:#fff; border-radius:16px; box-shadow:inset 0 0 0 2px #DCE2EC; padding:8px; width:min(280px,100%); margin:0 auto}
+.qrbox svg{display:block; width:100%; height:auto}
+.qrurl{word-break:break-all; text-align:center; font-family:var(--num); font-weight:700; margin:12px 0}
+.qrurl a{color:#1A318A}
+.qracts{display:flex; gap:8px; justify-content:center}
+.qrnote{font-size:13px; color:#465166; margin:12px 0 0}
+.dcard select.dxsel{width:100%; margin:0}

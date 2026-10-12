@@ -3,7 +3,7 @@ import { C, visit, dept, stIdx, nextTarget, sayBtn, ticket, template, followDate
 import { route, stepsOf, walkTime } from '../lib/floor.js';
 import { esc, hhmmOf } from '../lib/util.js';
 import { IC } from '../ui/icons.js';
-import { deliveryBlock } from './now.js';
+import { deliveryBlock, demoLink } from './now.js';
 import { mapBlock } from './map3d.js';
 
 // ---------- แผนที่ 2D ----------
@@ -150,7 +150,7 @@ function careMain() {
     <div>${IC.bell}<span>แจ้งเตือนทุกขั้น ทั้งนัดหมาย กินยา และยามาถึง</span></div></div>`;
   return {
     body: hero.html + chat + `<h2 class="sec">สถานะการติดตาม <span class="muted" style="font-weight:500;font-size:.857rem">รอบที่ ${c.round} จาก ${c.rounds}</span></h2><ol class="flow">${rows}</ol>`
-      + `<h2 class="sec">แผนจากหมอ</h2>${plan}<p class="disc">ข้อมูลสมมติ ไม่ใช่คำแนะนำทางการแพทย์</p>`,
+      + `<h2 class="sec">แผนจากหมอ</h2>${plan}<p class="disc">ข้อมูลสมมติ ไม่ใช่คำแนะนำทางการแพทย์</p>` + demoLink(),
     dock: hero.dock, tabs: true,
   };
 }

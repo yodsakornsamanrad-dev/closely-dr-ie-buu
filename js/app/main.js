@@ -305,6 +305,25 @@ const ACT = {
     C.U.care.draft = '';
     await act('chatSend', { id: visit().id, text: t });
   },
+  /** โหมดสาธิต: กดแทนเจ้าหน้าที่/หมอ บนมือถือเครื่องเดียว (ใช้ action ชุดเดียวกับหน้า staff) */
+  demoPanel() {
+    const v = visit(), c = v.care, id = v.id, list = [];
+    const add = (label, type, payload = { id }) => list.push({ label, fn: async () => { closeSheet(); try { await act(type, payload); } catch (e) { toast(e.message); } } });
+    if (v.stage === 'vitals') add('คัดกรองเสร็จ', 'vitalsDone');
+    if (v.stage === 'waiting') { add('เรียกคิวถัดไป (' + dept().name + ')', 'callNext', { dept: v.dept }); add('เรียกคิวนี้เลย', 'callVisit'); }
+    if (v.stage === 'consult') add('บันทึกผลตรวจ', 'saveResult');
+    if (v.stage === 'pharmacy' && v.rx === 'self') add('จ่ายยาแล้ว', 'dispensed');
+    if (v.rx === 'delivery' && v.deliv < 4) add('เลื่อนสถานะการส่งยา', 'advDeliv');
+    if (v.stage === 'done' && !v.left_at) add('ผู้ป่วยออกจาก รพ.', 'checkout');
+    if (v.result && c.phase === 'waitq') add('หมอ: ส่งแบบประเมิน', 'docSendQ');
+    if (c.phase === 'review') { add('หมอตัดสิน: นัดมาตรวจ', 'docFollow'); if (c.round < c.rounds) add('หมอตัดสิน: ส่งยาต่อ', 'docRefill'); }
+    if (c.phase === 'refill') add('เลื่อนสถานะส่งยารอบต่อไป', 'advRefill');
+    if (v.result) add('หมอ: ส่งข้อความ', 'docMsg');
+    showSheet({ say: false, tone: 'act', badge: 'โหมดสาธิต', title: 'กดแทนเจ้าหน้าที่',
+      body: list.length ? 'ปุ่มที่กดได้เปลี่ยนตามขั้นตอนของคุณ ในห้องเรียนจริงใช้หน้า staff บนคอมของผู้คุมแทนได้' : 'ขั้นนี้ไม่มีอะไรให้เจ้าหน้าที่กด รอผู้ป่วยทำขั้นต่อไป',
+      actions: [...list, { label: 'ปิด', main: true, fn: () => closeSheet() }] });
+    return 'norender';
+  },
   mic() { toast('ต้นแบบนี้ยังไม่บันทึกเสียง'); return 'norender'; },
   calAdd() { toast('ลงปฏิทินแล้ว'); return 'norender'; },
   reschedule() {

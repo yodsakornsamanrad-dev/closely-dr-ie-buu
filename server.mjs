@@ -22,7 +22,7 @@ const STATIC_ONLY = args.has('--static');
 const PORT = Number(process.env.PORT) || (STATIC_ONLY ? 5191 : 5190);
 // บนเครื่องตัวเองเปิดเฉพาะ localhost; --lan หรือ cloud host (มี PORT ให้มา) ต้องรับจากภายนอก
 const HOST = process.env.HOST || (args.has('--lan') || process.env.PORT ? '0.0.0.0' : '127.0.0.1');
-const STATE_FILE = path.join(ROOT, 'data', 'state.yaml');
+const STATE_FILE = process.env.STATE_FILE ? path.resolve(process.env.STATE_FILE) : path.join(ROOT, 'data', 'state.yaml');
 const now = () => isoLocal(new Date());
 
 const D = await loadData(name => fs.promises.readFile(path.join(ROOT, name), 'utf8'));

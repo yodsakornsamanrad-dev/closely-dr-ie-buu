@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="th" data-theme="light" data-chrome="navy">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Closely DR. × IE BUU หน้าเจ้าหน้าที่ สำหรับผู้คุม workshop: เรียกคิว บันทึกผลตรวจ ส่งยา ติดตามหลังกลับบ้าน และดาวน์โหลด YAML">
+<title>Closely DR. × IE BUU หน้าเจ้าหน้าที่</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/staff.css">
+</head>
+<body class="staffpage">
+<main class="staff" id="staff">
+  <div class="sbar" id="sbar"></div>
+  <section id="floor" aria-label="ผังชั้น OPD"></section>
+  <h2>จอเรียกคิว</h2>
+  <section class="callers" id="callers" aria-label="จอเรียกคิว"></section>
+  <h2>ผู้ป่วยวันนี้</h2>
+  <section id="patients" aria-label="ผู้ป่วยวันนี้"></section>
+  <section id="doctor" aria-label="ติดตามหลังกลับบ้าน"></section>
+  <section id="vstream" aria-label="Value stream"></section>
+  <p class="sfoot">Prototype by <b>IE BUU</b> · Service Design Thinking Workshop · ข้อมูลสมมติทั้งหมด ไม่ใช่คำแนะนำทางการแพทย์</p>
+</main>
+<dialog id="shareDlg" aria-labelledby="shareT"><h2 id="shareT">แชร์ลิงก์แอปผู้ป่วย</h2><p>ให้เพื่อนสแกน QR หรือเปิดลิงก์บนมือถือ</p><div id="shareBody"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script type="module" src="js/staff/main.js"></script>
+</body>
+</html>

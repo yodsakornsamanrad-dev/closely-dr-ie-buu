@@ -132,9 +132,11 @@ function flowChart() {
       <span>${ASME.op}ทำ</span><span>${ASME.insp}ตรวจ</span><span>${ASME.delay}รอ</span><span>${ASME.trans}เดิน</span></div>`;
 }
 
+export const demoLink = () => `<p class="demolink"><button class="link" data-act="demoPanel">${IC.hand}โหมดสาธิต: กดแทนเจ้าหน้าที่</button></p>`;
+
 export function nowTab() {
   const sp = statusPanel(), v = visit();
   const body = sp.html + feelCard() + flowChart() +
-    `<p style="text-align:center;margin-top:var(--s5)"><button class="link" data-act="leaveAsk">${v.left_at ? 'รับคิวใหม่ หรือลงชื่อออก' : 'ออกจากคิวนี้บนเครื่องนี้'}</button></p>`;
+    `<p style="text-align:center;margin-top:var(--s5)"><button class="link" data-act="leaveAsk">${v.left_at ? 'รับคิวใหม่ หรือลงชื่อออก' : 'ออกจากคิวนี้บนเครื่องนี้'}</button></p>` + demoLink();
   return { body, dock: sp.dock, tabs: true };
 }
