@@ -13,7 +13,7 @@
     "static": "node server.mjs --static",
     "reset": "node -e \"require('fs').rmSync('data/state.yaml',{force:true})\"",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "node --test \"tests/unit/*.test.mjs\"",
+    "test:unit": "node --test tests/unit/core.test.mjs tests/unit/crowd.test.mjs tests/unit/floor.test.mjs tests/unit/queue-timeline.test.mjs tests/unit/valuestream.test.mjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
