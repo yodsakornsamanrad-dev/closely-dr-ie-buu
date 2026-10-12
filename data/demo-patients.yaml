@@ -1,0 +1,27 @@
+# ผู้ป่วยจำลองสำหรับหน้า staff (ชื่อและเบอร์สมมติทั้งหมด — ห้ามใส่ข้อมูลผู้ป่วยจริง)
+#   minutes_ago : เริ่มลงทะเบียนเมื่อกี่นาทีก่อนเปิดแอป (ใช้สร้างเวลาของแต่ละขั้น)
+#   rx          : วิธีรับยา self = รับเองที่ห้องยา, delivery = ส่งยาถึงบ้าน
+patients:
+  - { qn: 5,  name: บุญเรือน ใจงาม, phone: "0810000001", dept: med,   stage: done,     rx: self, result: HT, minutes_ago: 95 }
+  - { qn: 7,  name: วิชัย พรมมา,    phone: "0810000002", dept: med,   stage: pharmacy, rx: self, result: URI, minutes_ago: 70 }
+  - { qn: 9,  name: มาลี ทองดี,     phone: "0810000003", dept: med,   stage: consult,  minutes_ago: 55 }
+  - { qn: 10, name: ประเสริฐ บุญมา, phone: "0810000004", dept: med,   stage: waiting,  minutes_ago: 40 }
+  - { qn: 11, name: ลำดวน หอมกลิ่น, phone: "0810000005", dept: med,   stage: waiting,  minutes_ago: 36 }
+  - { qn: 12, name: เฉลิม ชัยดี,     phone: "0810000006", dept: med,   stage: vitals,   minutes_ago: 12 }
+  - { qn: 4,  name: สุดา แก้วใส,     phone: "0810000007", dept: ortho, stage: waiting,  minutes_ago: 30 }
+  - { qn: 2,  name: อำนวย ศรีทอง,   phone: "0810000008", dept: eye,   stage: vitals,   minutes_ago: 9 }
+
+# ปุ่ม "เพิ่มผู้ป่วยจำลอง 3 คน"
+mock_names: [จำเนียร สุขใจ, ทองใบ ดีมาก, สมหญิง ปานแก้ว, บุญส่ง ทองคำ, ประภา แสงทอง, สมพร มีสุข]
+
+# สถิติ value stream ย้อนหลัง (ก่อนเริ่ม workshop) — รวมกับข้อมูลจริงจากแอปในหน้า staff
+#   n = จำนวนผู้ป่วย, avg / max = นาที, mood = คะแนนความรู้สึกเฉลี่ย 1–5
+value_stream_history:
+  n: 40
+  stages:
+    - { key: register, avg: 4,  max: 9,  mood: 3.9, comments: [ไม่ต้องต่อแถวกรอกเอกสาร] }
+    - { key: vitals,   avg: 8,  max: 15, mood: 3.6, comments: [] }
+    - { key: waiting,  avg: 30, max: 52, mood: 2.3, comments: [รอนาน ไม่รู้จะถึงเมื่อไหร่ เลยไม่กล้าไปเข้าห้องน้ำ, เห็นคิวในแอป เลยไปซื้อกาแฟได้] }
+    - { key: consult,  avg: 10, max: 18, mood: 4.4, comments: [ตัวหนังสือเล็ก มองไม่ค่อยเห็น] }
+    - { key: pharmacy, avg: 14, max: 41, mood: 2.8, comments: [คิวรับยายาวมาก, ส่งยาถึงบ้าน ไม่ต้องรอ ดีมาก] }
+    - { key: done,     avg: 6,  max: 10, mood: 4.1, comments: [] }

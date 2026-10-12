@@ -1,0 +1,39 @@
+# แผนกผู้ป่วยนอก
+#   letter       : ตัวอักษรนำหน้าเลขคิว (A013)
+#   symptoms     : ชิปอาการในหน้ายืนยันการลงทะเบียน
+#   exam_room    : ห้องตรวจที่ผู้ป่วยถูกเรียกเข้า
+#   result       : ผลวินิจฉัยสำเร็จรูปที่เลือกไว้ก่อนในหน้า staff (ดู results.yaml)
+#   queue        : เลขคิวตอนเริ่ม (calling = กำลังเรียก, last_issued = เลขล่าสุดที่ออกไปแล้ว)
+departments:
+  - key: med
+    name: อายุรกรรม
+    hint: ไข้ ไอ ความดัน เบาหวาน
+    letter: A
+    symptoms: [ไข้, ไอ, เจ็บคอ, ความดันสูง, น้ำตาลสูง, เวียนหัว]
+    exam_room: ห้องตรวจ 3
+    result: HT
+    queue: { calling: 9, last_issued: 12 }
+  - key: ortho
+    name: กระดูกและข้อ
+    hint: ปวดเข่า ปวดหลัง ข้อเสื่อม
+    letter: B
+    symptoms: [ปวดเข่า, ปวดหลัง, ปวดคอ, ข้อบวม]
+    exam_room: ห้องตรวจ 3
+    result: OA
+    queue: { calling: 3, last_issued: 6 }
+  - key: eye
+    name: ตา
+    hint: ตามัว ตาแห้ง ตรวจสายตา
+    letter: C
+    symptoms: [ตามัว, ตาแห้ง, ตาแดง, ตรวจสายตา]
+    exam_room: ห้องตรวจ 3
+    result: DRY
+    queue: { calling: 1, last_issued: 3 }
+
+# ตัวเลือก "ไม่แน่ใจ" — พยาบาลช่วยเลือกแผนกที่จุดคัดกรอง ระหว่างนี้ออกคิวของแผนกนี้ให้ก่อน
+unsure:
+  key: unsure
+  name: ไม่แน่ใจ
+  hint: พยาบาลจะช่วยเลือกแผนกให้ที่จุดคัดกรอง
+  symptoms: [ไข้, ปวด, เวียนหัว, อื่น ๆ]
+  fallback: med

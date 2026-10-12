@@ -1,19 +1,25 @@
 {
   "name": "closely-dr-ie-buu",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Hospital mobile app prototype for a Design Thinking / Customer Journey Map workshop. Data stored in YAML.",
-  "main": "server.js",
+  "description": "Closely DR. x IE BUU — แอปผู้ป่วยนอกสำหรับ workshop Design Thinking / Customer Journey Map ข้อมูลทั้งหมดเป็น YAML",
+  "type": "module",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "start": "node server.js",
-    "start:lan": "node -e \"process.env.HOST='0.0.0.0';require('./server.js')\"",
-    "reset": "node -e \"require('fs').rmSync('data/db.yaml',{force:true})\"",
-    "build:pages": "node scripts/build-pages.js"
+    "start": "node server.mjs",
+    "start:lan": "node server.mjs --lan",
+    "static": "node server.mjs --static",
+    "reset": "node -e \"require('fs').rmSync('data/state.yaml',{force:true})\"",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "node --test \"tests/unit/*.test.mjs\"",
+    "test:e2e": "playwright test"
   },
-  "dependencies": {
-    "yaml": "^2.5.0"
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.48.2",
+    "js-yaml": "^4.1.0",
+    "qrcode-generator": "^1.4.4"
   }
 }
