@@ -1,0 +1,19 @@
+{
+  "name": "closely-dr-ie-buu",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hospital mobile app prototype for a Design Thinking / Customer Journey Map workshop. Data stored in YAML.",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "start:lan": "node -e \"process.env.HOST='0.0.0.0';require('./server.js')\"",
+    "reset": "node -e \"require('fs').rmSync('data/db.yaml',{force:true})\"",
+    "build:pages": "node scripts/build-pages.js"
+  },
+  "dependencies": {
+    "yaml": "^2.5.0"
+  }
+}

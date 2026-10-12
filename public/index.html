@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F4F5F2">
+  <title>Closely DR. x IE BUU</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Sans+Thai+Looped:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">Closely DR. <span>× IE BUU</span></div>
+      <div class="top-actions">
+        <span id="live" class="live">กำลังเชื่อมต่อ</span>
+        <button class="size-btn" data-act="size" aria-label="ขยายตัวอักษร">ก+</button>
+      </div>
+    </header>
+    <main id="view" aria-live="polite"></main>
+    <nav id="tabs" class="tabs" hidden aria-label="เมนูหลัก">
+      <button data-act="tab" data-tab="now"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="7" y="3" width="10" height="13" rx="2"/><path d="M7 7.5h10M7 11.5h10M12 16v4M8 21h8"/></svg>ตอนนี้</button>
+      <button data-act="tab" data-tab="route"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 18-7-4.5L5 21z"/></svg>นำทาง</button>
+      <button data-act="tab" data-tab="care"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-35 12 12)"/><path d="M9.6 7.8l4.8 8.4"/></svg>ผลและยา</button>
+    </nav>
+  </div>
+  <div id="modal" class="modal" hidden></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="core.js"></script>
+  <script src="transport.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

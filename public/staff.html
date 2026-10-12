@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>หน้าเจ้าหน้าที่ Closely DR.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Sans+Thai+Looped:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #F4F5F2; --surface: #FFFFFF; --ink: #1C2733; --ink-2: #55606B; --rule: #D5D9D3;
+      --wait: #FFC20E; --go: #00875A; --act: #0057B8; --done: #E3E6E1; --alert: #C8102E;
+      --text: 'IBM Plex Sans Thai Looped', 'Leelawadee UI', Tahoma, sans-serif;
+      --num: 'Chakra Petch', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: var(--text); background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.5; }
+    button, select { font: inherit; color: inherit; }
+    :focus-visible { outline: 3px solid var(--act); outline-offset: 2px; }
+    header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--rule); }
+    header h1 { margin: 0; font-size: 1.1rem; }
+    header h1 span { font-weight: 400; color: var(--ink-2); }
+    header h1 .role { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--rule); color: var(--ink); font-weight: 600; }
+    header a { color: var(--ink); font-weight: 600; }
+    main { max-width: 1200px; margin: 0 auto; padding: 8px 24px 48px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--rule); }
+    section:last-child { border-bottom: 0; }
+    h2 { margin: 0 0 14px; font-size: 1.2rem; }
+    .section-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .section-head h2 { margin: 0; }
+    .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .muted { color: var(--ink-2); }
+    .small { font-size: .85rem; }
+    .num { font-family: var(--num); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .note { margin: 16px 0 0; padding: 10px 14px; border-left: 4px solid var(--wait); background: var(--surface); }
+
+    .btn { border: 2px solid var(--ink); background: var(--ink); color: #fff; padding: 7px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .btn.line { background: transparent; color: var(--ink); }
+    .btn.quiet { border-color: transparent; background: none; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+    .btn:disabled { opacity: .35; cursor: default; }
+    select { padding: 7px 8px; border: 2px solid var(--ink); border-radius: 8px; background: var(--surface); }
+
+    .andons { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+    .andon { padding: 16px; border-radius: 8px; background: var(--done); display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+    .andon.wait { background: var(--wait); }
+    .andon .big { font-family: var(--num); font-weight: 700; font-size: 3.4rem; line-height: 1; margin: 4px 0; }
+    .andon .btn { margin-top: 10px; align-self: flex-start; }
+
+    .scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px 10px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+    th { color: var(--ink-2); font-weight: 600; font-size: .85rem; border-bottom: 2px solid var(--ink); }
+    td.q { font-size: 1.15rem; }
+    td a { color: var(--ink-2); }
+    .stage { padding: 2px 10px; border-radius: 999px; background: var(--done); font-weight: 600; white-space: nowrap; }
+    .stage.waiting, .stage.vitals { background: var(--wait); }
+    .stage.consult { background: var(--go); color: #fff; }
+    .stage.pharmacy { background: var(--act); color: #fff; }
+    .stage.done { background: none; color: var(--ink-2); }
+    .act { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin: 0 0 20px; border-top: 2px solid var(--ink); }
+    .kpis div { padding: 10px 16px 0 0; }
+    .kpis div + div { padding-left: 16px; border-left: 1px solid var(--rule); }
+    .kpis dt { color: var(--ink-2); font-size: .9rem; }
+    .kpis dd { margin: 0; font-family: var(--num); font-weight: 700; font-size: 2.4rem; line-height: 1.15; }
+    .kpis small { font-size: 1rem; font-weight: 600; }
+    .kpis .nva dd { box-shadow: inset 0 -10px 0 var(--wait); display: inline-block; }
+
+    .vsm .stage-name { display: flex; gap: 10px; align-items: center; }
+    .sym { width: 24px; height: 24px; flex: none; }
+    .sym .shape { fill: none; stroke: var(--ink); stroke-width: 2.4; }
+    .tag { font-family: var(--num); font-weight: 700; padding: 1px 8px; border-radius: 4px; border: 2px solid var(--ink); }
+    .tag.VA { background: var(--go); border-color: var(--go); color: #fff; }
+    .tag.NVA { background: var(--wait); }
+    .bar-col { min-width: 220px; }
+    .bar { height: 10px; margin-top: 4px; border-radius: 2px; background: var(--ink-2); min-width: 2px; }
+    .bar.VA { background: var(--go); }
+    .bar.NVA { background: var(--wait); box-shadow: inset 0 0 0 1.5px var(--ink); }
+    .emo { font-size: 1.3rem; }
+    td.low { background: #FFF4CC; }
+    .comments { margin: 0; padding: 0; list-style: none; font-size: .92rem; }
+    .comments li { margin: 2px 0; }
+
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 8px; font-weight: 600; }
+    .toast[hidden] { display: none; }
+    label { white-space: nowrap; }
+    @media (max-width: 640px) { header, main { padding-left: 16px; padding-right: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Closely DR. <span>× IE BUU</span> <span class="role">หน้าเจ้าหน้าที่</span></h1>
+    <div class="tools"><a href="./" target="_blank">เปิดแอปผู้ป่วย</a><span id="tools" class="tools"></span></div>
+  </header>
+  <main id="view"></main>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="core.js"></script>
+  <script src="transport.js"></script>
+  <script src="staff.js"></script>
+</body>
+</html>

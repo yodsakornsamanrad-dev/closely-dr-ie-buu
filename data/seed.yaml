@@ -1,0 +1,193 @@
+# =====================================================================
+#  Closely DR. x IE BUU — ข้อมูลตั้งต้น (seed)
+#  ไฟล์นี้ใช้ตอนกด "รีเซ็ตข้อมูล" เท่านั้น ข้อมูลที่แอปใช้งานจริงอยู่ใน db.yaml
+#  ทุกอย่างเป็นข้อมูลสมมติเพื่อ workshop — ไม่ใช่คำแนะนำทางการแพทย์
+# =====================================================================
+meta:
+  app: Closely DR. x IE BUU
+  purpose: Design Thinking workshop — Customer Journey Map prototype
+  updatedAt: 2026-10-12T08:00:00
+
+settings:
+  walkingSpeedMps: 0.7          # ความเร็วเดินของผู้สูงอายุ (เมตร/วินาที) ใช้คำนวณเวลาเดิน
+  corridorY: 21                 # แนวทางเดินหลักบนแผนที่ (หน่วย = เมตร)
+  map: { width: 60, height: 40, floorName: ชั้น 1 อาคารผู้ป่วยนอก }
+  nearQueueAlert: 2             # แจ้งเตือน "ใกล้ถึงคิว" เมื่อเหลือคิวก่อนหน้าไม่เกินเท่านี้
+  deliveryPartner: PillPack by Amazon (พาร์ทเนอร์จำลอง)
+  deliverySteps:
+    - { key: ordered,          label: รับคำสั่งส่งยาแล้ว,          icon: "📋" }
+    - { key: packing,          label: จัดยาแยกซองตามมื้อ,          icon: "📦" }
+    - { key: shipped,          label: ส่งออกจากคลังยา,            icon: "🚚" }
+    - { key: out_for_delivery, label: กำลังนำส่งถึงบ้าน,           icon: "🛵" }
+    - { key: delivered,        label: ส่งถึงบ้านแล้ว,              icon: "🏠" }
+
+# ขั้นตอนของ Customer Journey (แก้ชื่อ/คำอธิบายได้ แอปจะเปลี่ยนตามทันที)
+# station: DEPT = ห้องตรวจของแผนกที่ผู้ป่วยเลือก
+journey:
+#   symbol: สัญลักษณ์ flow process chart (ASME) — operation ○, inspection □, delay D, transport ⇨
+#   value : VA = เพิ่มคุณค่าให้ผู้ป่วย, NNVA = ไม่เพิ่มคุณค่าแต่จำเป็น, NVA = ความสูญเปล่า (ควรลด)
+  - { key: register, label: ลงทะเบียน,         symbol: operation,  value: NNVA, icon: "📝", station: REG,  hint: ลงทะเบียนผ่านแอปหรือที่ตู้ Kiosk }
+  - { key: vitals,   label: คัดกรอง วัดความดัน, symbol: inspection, value: NNVA, icon: "💓", station: VIT,  hint: พยาบาลจะวัดความดัน ชั่งน้ำหนัก และถามอาการ }
+  - { key: waiting,  label: รอเรียกคิว,         symbol: delay,      value: NVA,  icon: "⏳", station: DEPT, hint: นั่งรอหน้าห้องตรวจ แอปจะแจ้งเตือนเมื่อถึงคิว }
+  - { key: consult,  label: พบแพทย์,            symbol: operation,  value: VA,   icon: "👩‍⚕️", station: DEPT, hint: เข้าห้องตรวจ แพทย์จะบันทึกผลลงแอปให้ }
+  - { key: pharmacy, label: รับยา / ส่งยาถึงบ้าน, symbol: operation,  value: VA,   icon: "💊", station: PHA,  hint: รับยาเองที่ห้องยา หรือเลือกส่งยาถึงบ้าน }
+  - { key: done,     label: กลับบ้าน,           symbol: transport,  value: NNVA, icon: "✅", station: ENT,  hint: เสร็จสิ้นการรักษาวันนี้ }
+
+departments:
+  - { id: MED, name: อายุรกรรม (โรคทั่วไป), icon: "🩺", prefix: A, station: RM3, avgMinutes: 8,  hint: "ไข้ ไอ ความดัน เบาหวาน" }
+  - { id: ORT, name: กระดูกและข้อ,         icon: "🦴", prefix: B, station: RM5, avgMinutes: 10, hint: "ปวดเข่า ปวดหลัง ข้อเสื่อม" }
+  - { id: EYE, name: ตา,                  icon: "👁️", prefix: C, station: RM7, avgMinutes: 6,  hint: "ตามัว ตาแห้ง ตรวจสายตา" }
+
+# nowServing = เลขคิวที่กำลังเรียก, lastIssued = เลขคิวล่าสุดที่ออกไปแล้ว
+queues:
+  MED: { nowServing: 12, lastIssued: 15 }
+  ORT: { nowServing: 4,  lastIssued: 6 }
+  EYE: { nowServing: 2,  lastIssued: 3 }
+
+# แผนที่ชั้น 1 (หน่วย = เมตร) x,y = มุมซ้ายบน, w,h = ขนาด
+stations:
+  - { id: ENT, name: ทางเข้า-ออก หลัก,       short: ทางเข้า,  x: 1,  y: 31, w: 8,  h: 7, color: "#94A3B8", landmark: ประตูกระจกบานใหญ่ มีรถเข็นให้ยืม, public: true }
+  - { id: REG, name: จุดลงทะเบียน / Kiosk,    short: ลงทะเบียน, x: 12, y: 30, w: 10, h: 8, color: "#60A5FA", landmark: ป้ายสีฟ้า ตู้ Kiosk 4 ตู้ }
+  - { id: VIT, name: จุดคัดกรอง วัดความดัน,   short: คัดกรอง, x: 25, y: 30, w: 11, h: 8, color: "#F472B6", landmark: ป้ายสีชมพู เก้าอี้วัดความดันอัตโนมัติ }
+  - { id: PHA, name: การเงิน & ห้องยา,        short: ห้องยา,  x: 40, y: 30, w: 15, h: 8, color: "#34D399", landmark: ป้ายสีเขียว ช่องจ่ายยา 1-4 }
+  - { id: RM3, name: ห้องตรวจ 3 อายุรกรรม,    short: ห้อง 3,  x: 6,  y: 4,  w: 13, h: 9, color: "#FBBF24", landmark: ป้ายสีเหลือง หน้าห้องมีจอเรียกคิว }
+  - { id: RM5, name: ห้องตรวจ 5 กระดูกและข้อ, short: ห้อง 5,  x: 22, y: 4,  w: 13, h: 9, color: "#FB923C", landmark: ป้ายสีส้ม ข้างลิฟต์ตัว B }
+  - { id: RM7, name: ห้องตรวจ 7 ตา,          short: ห้อง 7,  x: 38, y: 4,  w: 12, h: 9, color: "#A78BFA", landmark: ป้ายสีม่วง ตรงข้ามร้านกาแฟ }
+  - { id: WC,  name: ห้องน้ำ (มีห้องน้ำผู้สูงอายุ), short: ห้องน้ำ, x: 53, y: 4, w: 6, h: 9, color: "#CBD5E1", landmark: มีราวจับและปุ่มเรียกพยาบาล, public: true }
+  - { id: CAF, name: ร้านกาแฟ & ร้านค้า,      short: ร้านกาแฟ, x: 56, y: 30, w: 3, h: 8, color: "#D6A77A", landmark: ติดกับห้องยา, public: true }
+
+# ผลวินิจฉัยสำเร็จรูปให้ "แพทย์" (หน้า staff) เลือกบันทึก — แก้/เพิ่มได้
+diagnosisTemplates:
+  - id: HT
+    dept: MED
+    diagnosis: ความดันโลหิตสูง
+    explain: ความดันในหลอดเลือดสูงกว่าปกติ (วันนี้วัดได้ 152/96) ถ้าปล่อยไว้นานเสี่ยงโรคหัวใจและหลอดเลือดสมอง แต่ควบคุมได้ด้วยยาและการปรับพฤติกรรม
+    medicines:
+      - { name: แอมโลดิพีน (Amlodipine) 5 มก., forWhat: ลดความดันโลหิต, dose: 1 เม็ด, times: [morning], meal: after, days: 90, color: "#F6C445", note: กินทุกวันแม้ไม่มีอาการ ห้ามหยุดยาเอง }
+    advice: [ลดอาหารเค็ม น้ำปลา ผงชูรส, วัดความดันที่บ้านเช้า-เย็น แล้วจดไว้, เดินเร็ววันละ 30 นาที]
+    followUp: นัดตรวจอีกครั้ง 12 ม.ค. 2570 เวลา 09:00 น.
+  - id: DM
+    dept: MED
+    diagnosis: เบาหวานชนิดที่ 2
+    explain: ร่างกายใช้น้ำตาลได้ไม่ดี น้ำตาลในเลือดจึงสูง (วันนี้ 168 มก./ดล.) ต้องคุมอาหารและกินยาสม่ำเสมอ เพื่อป้องกันโรคไต ตา และแผลที่เท้า
+    medicines:
+      - { name: เมทฟอร์มิน (Metformin) 500 มก., forWhat: ลดน้ำตาลในเลือด, dose: 1 เม็ด, times: [morning, evening], meal: after, days: 90, color: "#FFFFFF", note: กินหลังอาหารทันที ช่วงแรกอาจท้องอืดเล็กน้อย }
+    advice: [ลดของหวาน ข้าวเหนียว น้ำอัดลม, ตรวจดูเท้าทุกวัน, ถ้าใจสั่น เหงื่อออก มือสั่น ให้อมลูกอมทันที]
+    followUp: นัดเจาะเลือดอีก 3 เดือน (งดอาหารหลังเที่ยงคืน)
+  - id: OA
+    dept: ORT
+    diagnosis: ข้อเข่าเสื่อม
+    explain: กระดูกอ่อนที่รองรับข้อเข่าสึกตามอายุ ทำให้ปวดเวลาเดินหรือขึ้นบันได ไม่อันตรายแต่ต้องดูแลเพื่อไม่ให้เสื่อมเร็ว
+    medicines:
+      - { name: พาราเซตามอล (Paracetamol) 500 มก., forWhat: แก้ปวด, dose: 1-2 เม็ด, times: [], asNeeded: true, meal: any, days: 10, color: "#FFFFFF", note: "กินเมื่อปวด ห่างกันอย่างน้อย 6 ชั่วโมง ไม่เกิน 8 เม็ด/วัน" }
+      - { name: ไดโคลฟีแนค เจล (Diclofenac gel), forWhat: ทาลดปวดเข่า, dose: ทาบาง ๆ, times: [morning, evening], meal: any, days: 14, color: "#BFDBFE", note: ใช้ทาภายนอกเท่านั้น ล้างมือหลังทา }
+    advice: [หลีกเลี่ยงการนั่งพับเพียบ คุกเข่า, ลดน้ำหนักจะช่วยลดปวดเข่า, บริหารกล้ามเนื้อต้นขาวันละ 10 นาที]
+    followUp: นัดติดตามอาการ 4 สัปดาห์
+  - id: DRY
+    dept: EYE
+    diagnosis: ภาวะตาแห้ง
+    explain: น้ำตาหล่อเลี้ยงตาน้อยกว่าปกติ ทำให้ระคายเคือง แสบตา ตามัวเป็นพัก ๆ พบบ่อยในผู้สูงอายุและคนที่ใช้จอนาน
+    medicines:
+      - { name: น้ำตาเทียม (Artificial tears), forWhat: หยอดตาให้ชุ่มชื้น, dose: 1-2 หยด ทั้งสองตา, times: [morning, noon, evening, bedtime], meal: any, days: 30, color: "#BAE6FD", note: เปิดขวดแล้วใช้ภายใน 1 เดือน }
+    advice: [พักสายตาทุก 20 นาที, กะพริบตาบ่อย ๆ, หลีกเลี่ยงลมหรือแอร์เป่าตรงหน้า]
+    followUp: ถ้าไม่ดีขึ้นใน 1 เดือน กลับมาพบแพทย์
+
+patients:
+  - { id: P0001, name: สมศรี ใจดี,       phone: "0810000001", address: "12/3 ต.แสนสุข อ.เมือง จ.ชลบุรี", createdAt: 2026-10-12T07:40:00 }
+  - { id: P0002, name: ประยูร มั่นคง,     phone: "0810000002", address: "88 ถ.ลงหาดบางแสน ต.แสนสุข อ.เมือง จ.ชลบุรี", createdAt: 2026-10-12T07:45:00 }
+  - { id: P0003, name: วิไล ศรีสุข,       phone: "0810000003", address: "", createdAt: 2026-10-12T08:05:00 }
+  - { id: P0004, name: บุญมี รักษ์ไทย,    phone: "0810000004", address: "", createdAt: 2026-10-12T08:10:00 }
+  - { id: P0005, name: มานพ แก้วใส,      phone: "0810000005", address: "", createdAt: 2026-10-12T08:12:00 }
+  - { id: P0006, name: สุดา พรมมา,       phone: "0810000006", address: "", createdAt: 2026-10-12T08:15:00 }
+  - { id: P0007, name: ทองดี อยู่สุข,     phone: "0810000007", address: "", createdAt: 2026-10-12T08:20:00 }
+  - { id: P0008, name: จันทร์เพ็ญ ศรีวงศ์, phone: "0810000008", address: "", createdAt: 2026-10-12T08:02:00 }
+
+# events = เวลาเข้าแต่ละขั้นตอน (ใช้คำนวณระยะเวลาใน Journey Map)
+# feedback = ความรู้สึกของผู้ป่วยต่อแต่ละขั้นตอน 1 (แย่มาก) – 5 (ดีมาก)
+visits:
+  - id: V0001
+    patientId: P0001
+    dept: MED
+    queueNo: 10
+    queueLabel: A010
+    symptoms: เวียนหัว ปวดท้ายทอย
+    stage: done
+    location: ENT
+    createdAt: 2026-10-12T07:40:00
+    diagnosis: { templateId: HT, name: ความดันโลหิตสูง, explain: "ความดันในหลอดเลือดสูงกว่าปกติ (วันนี้วัดได้ 152/96) ถ้าปล่อยไว้นานเสี่ยงโรคหัวใจและหลอดเลือดสมอง แต่ควบคุมได้ด้วยยาและการปรับพฤติกรรม", doctor: นพ.ใจดี รักษาดี, at: 2026-10-12T08:52:00 }
+    medicines:
+      - { name: แอมโลดิพีน (Amlodipine) 5 มก., forWhat: ลดความดันโลหิต, dose: 1 เม็ด, times: [morning], meal: after, days: 90, color: "#F6C445", note: กินทุกวันแม้ไม่มีอาการ ห้ามหยุดยาเอง }
+    advice: [ลดอาหารเค็ม น้ำปลา ผงชูรส, วัดความดันที่บ้านเช้า-เย็น แล้วจดไว้, เดินเร็ววันละ 30 นาที]
+    followUp: นัดตรวจอีกครั้ง 12 ม.ค. 2570 เวลา 09:00 น.
+    medPickup: { mode: pickup, status: picked, at: 2026-10-12T09:20:00 }
+    events:
+      - { at: 2026-10-12T07:36:00, type: stage, stage: register }
+      - { at: 2026-10-12T07:40:00, type: stage, stage: vitals }
+      - { at: 2026-10-12T07:58:00, type: stage, stage: waiting }
+      - { at: 2026-10-12T08:41:00, type: stage, stage: consult }
+      - { at: 2026-10-12T08:52:00, type: stage, stage: pharmacy }
+      - { at: 2026-10-12T09:20:00, type: stage, stage: done }
+    feedback:
+      - { stage: register, score: 4, comment: ลูกช่วยกรอกให้ ง่ายดี, at: 2026-10-12T07:41:00 }
+      - { stage: vitals,   score: 3, comment: "", at: 2026-10-12T07:59:00 }
+      - { stage: waiting,  score: 2, comment: รอนาน ไม่รู้จะถึงเมื่อไหร่ เลยไม่กล้าไปเข้าห้องน้ำ, at: 2026-10-12T08:42:00 }
+      - { stage: consult,  score: 5, comment: หมออธิบายเข้าใจ, at: 2026-10-12T08:53:00 }
+      - { stage: pharmacy, score: 2, comment: คิวรับยายาวมาก, at: 2026-10-12T09:21:00 }
+  - id: V0002
+    patientId: P0002
+    dept: ORT
+    queueNo: 3
+    queueLabel: B003
+    symptoms: ปวดเข่าขวาเวลาขึ้นบันได
+    stage: done
+    location: ENT
+    createdAt: 2026-10-12T07:45:00
+    diagnosis: { templateId: OA, name: ข้อเข่าเสื่อม, explain: "กระดูกอ่อนที่รองรับข้อเข่าสึกตามอายุ ทำให้ปวดเวลาเดินหรือขึ้นบันได ไม่อันตรายแต่ต้องดูแลเพื่อไม่ให้เสื่อมเร็ว", doctor: พญ.สมใจ กระดูกดี, at: 2026-10-12T08:47:00 }
+    medicines:
+      - { name: พาราเซตามอล (Paracetamol) 500 มก., forWhat: แก้ปวด, dose: 1-2 เม็ด, times: [], asNeeded: true, meal: any, days: 10, color: "#FFFFFF", note: "กินเมื่อปวด ห่างกันอย่างน้อย 6 ชั่วโมง ไม่เกิน 8 เม็ด/วัน" }
+    advice: [หลีกเลี่ยงการนั่งพับเพียบ คุกเข่า, บริหารกล้ามเนื้อต้นขาวันละ 10 นาที]
+    followUp: นัดติดตามอาการ 4 สัปดาห์
+    medPickup: { mode: delivery, status: delivered, address: "88 ถ.ลงหาดบางแสน ต.แสนสุข อ.เมือง จ.ชลบุรี", trackingNo: PP-260001, at: 2026-10-12T08:50:00 }
+    events:
+      - { at: 2026-10-12T07:43:00, type: stage, stage: register }
+      - { at: 2026-10-12T07:45:00, type: stage, stage: vitals }
+      - { at: 2026-10-12T08:05:00, type: stage, stage: waiting }
+      - { at: 2026-10-12T08:30:00, type: stage, stage: consult }
+      - { at: 2026-10-12T08:47:00, type: stage, stage: pharmacy }
+      - { at: 2026-10-12T09:35:00, type: stage, stage: done }
+    feedback:
+      - { stage: register, score: 3, comment: ตัวหนังสือเล็ก มองไม่ค่อยเห็น, at: 2026-10-12T07:46:00 }
+      - { stage: vitals,   score: 4, comment: "", at: 2026-10-12T08:06:00 }
+      - { stage: waiting,  score: 4, comment: เห็นคิวในแอป เลยไปซื้อกาแฟได้, at: 2026-10-12T08:31:00 }
+      - { stage: consult,  score: 4, comment: "", at: 2026-10-12T08:48:00 }
+      - { stage: pharmacy, score: 5, comment: ส่งยาถึงบ้าน ไม่ต้องรอ ดีมาก, at: 2026-10-12T08:51:00 }
+  - id: V0003
+    patientId: P0008
+    dept: MED
+    queueNo: 12
+    queueLabel: A012
+    symptoms: ไอ มีเสมหะ 3 วัน
+    stage: consult
+    location: RM3
+    createdAt: 2026-10-12T08:02:00
+    diagnosis: null
+    medicines: []
+    advice: []
+    followUp: null
+    medPickup: null
+    events:
+      - { at: 2026-10-12T08:00:00, type: stage, stage: register }
+      - { at: 2026-10-12T08:02:00, type: stage, stage: vitals }
+      - { at: 2026-10-12T08:20:00, type: stage, stage: waiting }
+      - { at: 2026-10-12T08:55:00, type: stage, stage: consult }
+    feedback: []
+  - { id: V0004, patientId: P0003, dept: MED, queueNo: 13, queueLabel: A013, symptoms: มาตามนัด, stage: waiting, location: RM3, createdAt: 2026-10-12T08:05:00, diagnosis: null, medicines: [], advice: [], followUp: null, medPickup: null, feedback: [],
+      events: [ { at: 2026-10-12T08:03:00, type: stage, stage: register }, { at: 2026-10-12T08:05:00, type: stage, stage: vitals }, { at: 2026-10-12T08:24:00, type: stage, stage: waiting } ] }
+  - { id: V0005, patientId: P0004, dept: MED, queueNo: 14, queueLabel: A014, symptoms: ไข้ ปวดหัว, stage: waiting, location: RM3, createdAt: 2026-10-12T08:10:00, diagnosis: null, medicines: [], advice: [], followUp: null, medPickup: null, feedback: [],
+      events: [ { at: 2026-10-12T08:08:00, type: stage, stage: register }, { at: 2026-10-12T08:10:00, type: stage, stage: vitals }, { at: 2026-10-12T08:30:00, type: stage, stage: waiting } ] }
+  - { id: V0006, patientId: P0005, dept: MED, queueNo: 15, queueLabel: A015, symptoms: เวียนหัว, stage: vitals, location: VIT, createdAt: 2026-10-12T08:12:00, diagnosis: null, medicines: [], advice: [], followUp: null, medPickup: null, feedback: [],
+      events: [ { at: 2026-10-12T08:11:00, type: stage, stage: register }, { at: 2026-10-12T08:12:00, type: stage, stage: vitals } ] }
+  - { id: V0007, patientId: P0006, dept: ORT, queueNo: 5, queueLabel: B005, symptoms: ปวดหลังส่วนล่าง, stage: waiting, location: RM5, createdAt: 2026-10-12T08:15:00, diagnosis: null, medicines: [], advice: [], followUp: null, medPickup: null, feedback: [],
+      events: [ { at: 2026-10-12T08:13:00, type: stage, stage: register }, { at: 2026-10-12T08:15:00, type: stage, stage: vitals }, { at: 2026-10-12T08:33:00, type: stage, stage: waiting } ] }
+  - { id: V0008, patientId: P0007, dept: EYE, queueNo: 3, queueLabel: C003, symptoms: ตามัว, stage: waiting, location: RM7, createdAt: 2026-10-12T08:20:00, diagnosis: null, medicines: [], advice: [], followUp: null, medPickup: null, feedback: [],
+      events: [ { at: 2026-10-12T08:18:00, type: stage, stage: register }, { at: 2026-10-12T08:20:00, type: stage, stage: vitals }, { at: 2026-10-12T08:36:00, type: stage, stage: waiting } ] }
